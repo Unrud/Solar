@@ -12,6 +12,7 @@ __translations = {
 def get_translation(request):
     for lang in request.headers.get("Accept-Language", "").split(","):
         (lang, *_) = lang.split(";", 1)
+        (lang, *_) = lang.split("-", 1)
         if not lang:
             continue
         t = __translations.get(lang)
