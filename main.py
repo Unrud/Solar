@@ -421,22 +421,46 @@ def index(request):
         yield from html_header_stream(t)
         if config.REFRESH_WEBPAGE:
             yield '<style onload="' + q(
-                "const refresh=()=>setTimeout(()=>"
-                + "fetch(location.href)"
-                + ".then((response)=>{"
-                + "if(!response.ok){"
-                + "throw new Error(`Response status: ${response.status}`);"
+                f"const refreshInterval = {config.REFRESH_WEBPAGE * 1000:.0f};"
+                + 'const errorElement = document.getElementById("error");'
+                + "let startTime = Date.now();"
+                + "let timeoutId = 0;"
+                + "async function update() {"
+                + "window.clearTimeout(timeoutId);"
+                + 'document.removeEventListener("visibilitychange", update);'
+                + "if (document.hidden) {"
+                + 'console.debug("Update: document hidden");'
+                + 'document.addEventListener("visibilitychange", update);'
+                + "return;"
                 + "}"
-                + "return response.text();"
-                + "})"
-                + ".then((html)=>document.documentElement.innerHTML=html)"
-                + ".catch((err)=>{"
-                + "console.error(err);"
-                + "refresh();"
-                + 'document.getElementById("error").style'
-                + '.removeProperty("display");'
-                + f"}}),{config.REFRESH_WEBPAGE * 1000:.0f});"
-                + "refresh();"
+                + "const elapsed = Date.now() - startTime;"
+                + "if (elapsed >= 0 && elapsed < refreshInterval) {"
+                + "const wait = refreshInterval - elapsed;"
+                + 'console.debug("Update: waiting", wait);'
+                + "timeoutId = window.setTimeout(update, wait);"
+                + 'document.addEventListener("visibilitychange", update);'
+                + "return;"
+                + "}"
+                + "if (elapsed < 0 || elapsed >= refreshInterval*2) {"
+                + 'console.debug("Update: stale");'
+                + 'if (errorElement) errorElement.style.removeProperty("display");'
+                + "}"
+                + 'console.debug("Update: fetch");'
+                + "try {"
+                + "const resp = await fetch(location.href);"
+                + "if(!resp.ok){"
+                + "throw new Error(`Response status: ${resp.status}`);"
+                + "}"
+                + 'console.debug("Update: success");'
+                + "document.documentElement.innerHTML = await resp.text();"
+                + "} catch (err) {"
+                + 'console.error("Update: error", err);'
+                + 'if (errorElement) errorElement.style.removeProperty("display");'
+                + "startTime = Date.now();"
+                + "update();"
+                + "}"
+                + "}"
+                + "update();"
             ) + '"></style>'
         yield f'<h1>{q(t("Solar"))}</h1>'
         yield '<h2 id="error" class="error"'
