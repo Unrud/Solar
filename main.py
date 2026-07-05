@@ -308,14 +308,12 @@ def q(s):
     )
 
 
-async def html_header_stream(t):
+async def html_header_stream(t, title):
     yield "<!doctype html>"
     yield f'<html lang="{q(t.lang)}">'
     yield '<meta charset="utf-8">'
     yield ('<meta content="width=device-width, initial-scale=1" name="viewport">')
-    yield "<title>"
-    yield q(t("Solar"))
-    yield "</title>"
+    yield f"<title>{q(title)}</title>"
     yield "<style>"
     yield ":root {"
     yield "color-scheme:light dark;"
@@ -351,10 +349,9 @@ async def html_header_stream(t):
 
 def html_error(t, message, status=400):
     async def stream(t):
-        yield from html_header_stream(t)
-        yield '<h1 class="error">'
-        yield f'{q(t("Solar"))} - {q(t("Error"))}'
-        yield "</h1>"
+        title = f"{t("Solar")} - {t("Error")}"
+        yield from html_header_stream(t, title)
+        yield f'<h1 class="error">{q(title)}</h1>'
         yield f"<h2>{q(message)}</h2>"
 
     return Response(
@@ -418,7 +415,8 @@ def index(request):
 
         props = __data.get("properties", {})
         packs = __data.get("packData", [])
-        yield from html_header_stream(t)
+        title = t("Solar")
+        yield from html_header_stream(t, title)
         if config.REFRESH_WEBPAGE:
             yield '<style onload="' + q(
                 f"const refreshInterval = {config.REFRESH_WEBPAGE * 1000:.0f};"
@@ -462,7 +460,7 @@ def index(request):
                 + "}"
                 + "update();"
             ) + '"></style>'
-        yield f'<h1>{q(t("Solar"))}</h1>'
+        yield f"<h1>{q(title)}</h1>"
         yield '<h2 id="error" class="error"'
         if __ble_write_char:
             yield ' style="display:none"'
@@ -688,8 +686,9 @@ def index(request):
 def output_limit(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/output-limit">'
         yield "<label>"
         yield f'<h2>{q(t("Maximum power"))}</h2>'
@@ -756,8 +755,9 @@ def output_limit_set(request):
 def min_soc(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/min-soc">'
         yield "<label>"
         yield f'<h2>{q(t("Minimum charge level"))}</h2>'
@@ -798,8 +798,9 @@ def min_soc_set(request):
 def soc_set(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/soc-set">'
         yield "<label>"
         yield f'<h2>{q(t("Maximum charge level"))}</h2>'
@@ -840,8 +841,9 @@ def soc_set_set(request):
 def hub_state(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/hub-state">'
         yield f'<h2>{q(t("Automatic shutdown"))}</h2>'
         for value, label in [[1, t("On")], [0, t("Off")]]:
@@ -879,8 +881,9 @@ def hub_state_set(request):
 def pass_mode(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/pass-mode">'
         yield f'<h2>{q(t("Bypass"))}</h2>'
         for value, label in [[0, t("Auto")], [2, t("On")], [1, t("Off")]]:
@@ -918,8 +921,9 @@ def pass_mode_set(request):
 def buzzer_switch(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/buzzer-switch">'
         yield f'<h2>{q(t("Buzzer"))}</h2>'
         for value, label in [[1, t("On")], [0, t("Off")]]:
@@ -957,8 +961,9 @@ def buzzer_switch_set(request):
 def auto_recover(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/auto-recover">'
         yield f'<h2>{q(t("Reset bypass to auto after one day"))}</h2>'
         for value, label in [[1, t("On")], [0, t("Off")]]:
@@ -996,8 +1001,9 @@ def auto_recover_set(request):
 def inverse(request):
     async def stream(t):
         props = __data.get("properties", {})
-        yield from html_header_stream(t)
-        yield f'<h1>{q(t("Solar"))} - {q(t("Settings"))}</h1>'
+        title = f"{t("Solar")} - {t("Settings")}"
+        yield from html_header_stream(t, title)
+        yield f"<h1>{q(title)}</h1>"
         yield '<form method="POST" action="/settings/inverse">'
         yield "<label>"
         yield f'<h2>{q(t("Maximum inverter power"))}</h2>'
