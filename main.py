@@ -391,7 +391,7 @@ pvBrands = ["Hoymiles", "Enphase", "APsystems", "Anker", "Deye", "BossWerk", "Ts
 @app.get("/diagram.svg")
 def diagram_svg(request):
     return Response.send_file(
-        "/diagram.svgz", content_type="image/svg+xml", compressed=True
+        "/diagram.svgz", content_type="image/svg+xml", compressed=True, max_age=60 * 60
     )
 
 
