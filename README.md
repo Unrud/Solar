@@ -45,6 +45,8 @@ libraries there:
 
 * [aioble](https://github.com/micropython/micropython-lib/tree/master/micropython/bluetooth/aioble):
   Copy the folder `aioble` into the `lib` directory
+* [uaiohttpclient](https://github.com/micropython/micropython-lib/tree/master/micropython/uaiohttpclient):
+  Copy the file `uaiohttpclient.py` into the `lib` directory
 * [microdot](https://github.com/miguelgrinberg/microdot):
   Copy the files `scr/microdot/__init__.py` and `src/microdot/microdot.py`
   into the `lib/microdot` directory.

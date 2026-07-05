@@ -1,16 +1,17 @@
 import asyncio
+import binascii
 import bluetooth
 import json
 import math
 import network
 import os
-import requests
 import sys
 import time
-import binascii
 from machine import WDT
 
+# https://github.com/micropython/micropython-lib
 import aioble
+import uaiohttpclient
 
 # https://github.com/miguelgrinberg/microdot
 from microdot import Microdot, Response, redirect
@@ -205,40 +206,52 @@ async def power_task():
         if not __meter_available:
             continue
         try:
+            try:
+                resp = await uaiohttpclient.request("GET", config.METER_ENDPOINT)
+                if resp.status != 200:
+                    raise TypeError(f"invalid meter status code: {resp.status!r}")
+                meter_data = json.loads(await resp.read())
+                if not (
+                    isinstance(meter_data, dict)
+                    and isinstance(
+                        meter_data.get(config.METER_POWER_FIELD), (float, int, None)
+                    )
+                    and isinstance(
+                        meter_data.get(config.METER_POWER_DISPLAY_FIELD),
+                        (float, int, None),
+                    )
+                ):
+                    raise TypeError(f"invalid meter data: {meter_data!r}")
+            except Exception:
+                __auto_power_info_data = {}
+                props = __data.get("properties", {})
+                output_power = props.get("outputHomePower")
+                output_power_limit = props.get("outputLimit")
+                inverter_max_power = props.get("inverseMaxPower")
+                is_active = (
+                    output_power is not None
+                    and output_power_limit is not None
+                    and inverter_max_power is not None
+                    and __ble_write_char
+                    and __auto_power_limit
+                )
+                if is_active and output_power_limit != 0:
+                    await ble_set_output_power_limit(0)
+                raise
+            __auto_power_info_data = meter_data
             props = __data.get("properties", {})
             output_power = props.get("outputHomePower")
             output_power_limit = props.get("outputLimit")
             inverter_max_power = props.get("inverseMaxPower")
-            should_set_output_power_limit = (
+            is_active = (
                 output_power is not None
                 and output_power_limit is not None
                 and inverter_max_power is not None
                 and __ble_write_char
                 and __auto_power_limit
             )
-            __auto_power_info_data = {}
-            try:
-                data = requests.get(config.METER_ENDPOINT).json()
-                if not (
-                    isinstance(data, dict)
-                    and isinstance(
-                        data.get(config.METER_POWER_FIELD), (float, int, None)
-                    )
-                    and isinstance(
-                        data.get(config.METER_POWER_DISPLAY_FIELD), (float, int, None)
-                    )
-                ):
-                    raise TypeError(f"invalid meter data: {data!r}")
-            except Exception:
-                if should_set_output_power_limit and output_power_limit != 0:
-                    await ble_set_output_power_limit(0)
-                raise
-            __auto_power_info_data = data
-            if not should_set_output_power_limit:
-                __auto_power_info_active = False
-                continue
-            incoming = data.get(config.METER_POWER_FIELD)
-            if incoming is None:
+            incoming = meter_data.get(config.METER_POWER_FIELD)
+            if not is_active or incoming is None:
                 __auto_power_info_active = False
                 continue
             total = incoming + output_power
@@ -260,14 +273,14 @@ async def power_task():
                     and output_power * 1.2 + 20 <= output_power_limit
                 )
             )
-            if not skip:
-                await ble_set_output_power_limit(new_limit)
             __auto_power_info_incoming = incoming
             __auto_power_info_total = total
             __auto_power_info_remaining = remaining
             __auto_power_info_new_limit = new_limit
             __auto_power_info_skip = skip
             __auto_power_info_active = True
+            if not skip:
+                await ble_set_output_power_limit(new_limit)
         except MemoryError:
             raise
         except Exception as e:
