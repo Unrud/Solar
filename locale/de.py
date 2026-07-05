@@ -6,9 +6,9 @@ class Translation(BaseTranslation):
     decimal_seperator = ","
     thousands_seperator = "."
     strings = {
-        "{} hr": "{} Std",
-        "{} hr {} min": "{} Std {} Min",
-        "{} min": "{} Min",
+        "{}\u202fhr": "{}\u202fStd",
+        "{}\u202fhr\u00a0{}\u202fmin": "{}\u202fStd\u00a0{}\u202fMin",
+        "{}\u202fmin": "{}\u202fMin",
         "Apply": "Übernehmen",
         "auto": "auto",
         "Auto": "Auto",
@@ -39,8 +39,8 @@ class Translation(BaseTranslation):
         "On": "An",
         "Other": "Sonstige",
         "Output": "Ausgang",
-        "Pack {}": "Pack {}",
-        "Panel {}": "Panel {}",
+        "Pack\u00a0{}": "Pack\u00a0{}",
+        "Panel\u00a0{}": "Panel\u00a0{}",
         "Power": "Leistung",
         "Power import": "Bezug",
         "Remaining at limit": "Verbleibend bei Limit",
@@ -54,5 +54,5 @@ class Translation(BaseTranslation):
         "Target range": "Soll-Bereich",
         "Total power": "Gesamtleistung",
         "Total power consumption": "Gesamtverbauch",
-        "value must be >= 100 or a multiple of 30": "Wert muss >= 100 oder ein Vielfaches von 30 sein",
+        "value must be ≥\u202f100 or a multiple of 30": "Wert muss ≥\u202f100 oder ein Vielfaches von 30 sein",
     }

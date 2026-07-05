@@ -7,9 +7,9 @@ class BaseTranslation:
     decimal_seperator = "."
     thousands_seperator = ","
     strings = {
-        "{} hr": None,
-        "{} hr {} min": None,
-        "{} min": None,
+        "{}\u202fhr": None,
+        "{}\u202fhr\u00a0{}\u202fmin": None,
+        "{}\u202fmin": None,
         "Apply": None,
         "auto": None,
         "Auto": None,
@@ -40,8 +40,8 @@ class BaseTranslation:
         "On": None,
         "Other": None,
         "Output": None,
-        "Pack {}": None,
-        "Panel {}": None,
+        "Pack\u00a0{}": None,
+        "Panel\u00a0{}": None,
         "Power": None,
         "Power import": None,
         "Remaining at limit": None,
@@ -55,7 +55,7 @@ class BaseTranslation:
         "Target range": None,
         "Total power": None,
         "Total power consumption": None,
-        "value must be >= 100 or a multiple of 30": None,
+        "value must be ≥\u202f100 or a multiple of 30": None,
     }
 
     def __call__(self, s, *args, raw=False):
@@ -71,10 +71,10 @@ class BaseTranslation:
             return self.no_value
         value = math.trunc(value)
         if value // 60 == 0:
-            return t("{} min", value)
+            return t("{}\u202fmin", value)
         if value % 60 == 0:
-            return t("{} hr", value // 60)
-        return t("{} hr {} min", value // 60, value % 60)
+            return t("{}\u202fhr", value // 60)
+        return t("{}\u202fhr\u00a0{}\u202fmin", value // 60, value % 60)
 
     def number(self, value, unit=None, round=0, div=1):
         if value is None:
@@ -90,16 +90,16 @@ class BaseTranslation:
         if value < 0:
             s = f"-{s}"
         if unit:
-            s += f" {unit}"
+            s += f"\u202f{unit}"
         return s
 
     def number_range(self, value1, value2, unit="", round=0, div=1):
         if value1 is None and value2 is None:
             return self.no_value
         s = (
-            f"{self.number(value1, '', round, div)} "
-            + f"- {self.number(value2, '', round, div)}"
+            f"{self.number(value1, '', round, div)}\u00a0"
+            + f"-\u00a0{self.number(value2, '', round, div)}"
         )
         if unit:
-            s += f" {unit}"
+            s += f"\u202f{unit}"
         return s

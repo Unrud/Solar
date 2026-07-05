@@ -641,8 +641,8 @@ def index(request):
             yield "</div>"
         yield f'<h2>{q(t("Solar"))}</h2>'
         yield kv(t("Total power"), t.number(props.get("solarInputPower"), "W"))
-        yield kv(t("Panel {}", 1), t.number(props.get("solarPower1"), "W"))
-        yield kv(t("Panel {}", 2), t.number(props.get("solarPower2"), "W"))
+        yield kv(t("Panel\u00a0{}", 1), t.number(props.get("solarPower1"), "W"))
+        yield kv(t("Panel\u00a0{}", 2), t.number(props.get("solarPower2"), "W"))
         yield f'<h2>{q(t("Battery"))}</h2>'
         yield kv(t("Charge level"), t.number(props.get("electricLevel"), "%"))
         yield kv(
@@ -668,7 +668,7 @@ def index(request):
             t.minutes(value) if value is not None else None,
         )
         for i, pack in enumerate(packs):
-            yield f'<h3>{q(t("Pack {}", i + 1))}</h3>'
+            yield f'<h3>{q(t("Pack\u00a0{}", i + 1))}</h3>'
             yield kv(t("Serial number"), pack.get("sn"))
             yield kv(t("Software version"), pack.get("softVersion"))
             yield kv(
@@ -711,7 +711,7 @@ def output_limit(request):
             yield f' max="{q(value)}"'
         js = (
             "this.setCustomValidity(this.value < 100 && this.value % 30 ? "
-            + repr(t("value must be >= 100 or a multiple of 30"))
+            + json.dumps(t("value must be ≥\u202f100 or a multiple of 30"))
             + ' : "")'
         )
         yield f' onChange="{q(js)}"'
