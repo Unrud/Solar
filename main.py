@@ -408,7 +408,7 @@ def index(request):
             if extra:
                 s += f" ({extra})"
             if setting:
-                s += f' <a href="{q("/settings/"+setting)}">🛠</a>'
+                s += f' <a href="{q("/settings/"+setting)}" title="{q(t("Settings"))}">⚙︎</a>'
             return (
                 "<p" + (f' class="{q(class_name)}"' if class_name else "") + f">{s}</p>"
             )
