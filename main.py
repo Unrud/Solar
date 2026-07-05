@@ -376,8 +376,8 @@ def html_error(t, message, status=400):
 
 @app.before_request
 async def check_csrf(request):
-    if request.method == "POST" and "csrf" not in request.cookies:
-        return html_error("csrf cookie missing")
+    if request.method not in ("GET", "HEAD") and "csrf" not in request.cookies:
+        return html_error(get_translation(request), "csrf cookie missing", 403)
 
 
 @app.after_request
@@ -462,8 +462,8 @@ def index(request):
                 + "if(!resp.ok){"
                 + "throw new Error(`Response status: ${resp.status}`);"
                 + "}"
-                + 'console.debug("Update: success");'
                 + "document.documentElement.innerHTML = await resp.text();"
+                + 'console.debug("Update: success");'
                 + "} catch (err) {"
                 + 'console.error("Update: error", err);'
                 + 'if (errorElement) errorElement.style.removeProperty("display");'
@@ -760,7 +760,7 @@ def output_limit_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -803,7 +803,7 @@ def min_soc_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -846,7 +846,7 @@ def soc_set_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -886,7 +886,7 @@ def hub_state_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -926,7 +926,7 @@ def pass_mode_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -966,7 +966,7 @@ def buzzer_switch_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -1006,7 +1006,7 @@ def auto_recover_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
@@ -1065,7 +1065,7 @@ def inverse_set(request):
         raise
     except Exception as e:
         sys.print_exception(e)
-        return html_error(e)
+        return html_error(get_translation(request), e)
     return redirect("/")
 
 
