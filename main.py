@@ -479,58 +479,65 @@ def index(request):
             yield ' style="display:none"'
         yield f'>{q(t("No connection"))}</h2>'
         yield '<svg xmlns="http://www.w3.org/2000/svg"'
-        yield ' width="1024" height="691" viewBox="0 0 1024 691"'
+        yield ' width="1024" height="700" viewBox="0 0 1024 700"'
         yield ' style="'
         yield "max-width:calc(min(100%,30rem));"
         yield "height:auto;"
-        yield "fill:currentColor;"
         yield '">'
-        svg_text_attr = 'font-size="40px" dominant-baseline="middle"'
+        svg_text_attr = 'font-size="40px" fill="currentColor"'
         yield '<use href="diagram.svg#home"/>'
         yield '<use href="diagram.svg#inverter"/>'
-        yield '<use href="diagram.svg#home-inverter-conn"/>'
         yield '<use href="diagram.svg#solar"/>'
-        yield '<use href="diagram.svg#inverter-solar-conn"/>'
         value = props.get("solarInputPower")
         if value:
             yield '<use href="diagram.svg#solar-inverter"/>'
             yield '<use href="diagram.svg#solar-sun"/>'
-            yield f'<text x="745" y="251" {svg_text_attr}>'
+            yield f'<text x="776.106" y="221.521" {svg_text_attr}'
+            yield ' dominant-baseline="middle" text-anchor="start">'
             yield q(t.number(value, "W"))
             yield "</text>"
-        elif value == 0:
-            yield '<use href="diagram.svg#solar-inverter-x"/>'
+        else:
+            yield '<use href="diagram.svg#inverter-solar-conn"/>'
+            if value == 0:
+                yield '<use href="diagram.svg#inverter-solar-x"/>'
         value = props.get("outputHomePower")
         if value:
             yield '<use href="diagram.svg#inverter-home"/>'
-            yield f'<text x="611" y="421" {svg_text_attr} text-anchor="end">'
+            yield f'<text x="572.641" y="348.146" {svg_text_attr}'
+            yield ' dominant-baseline="hanging" text-anchor="middle">'
             yield q(t.number(value, "W"))
             yield "</text>"
-        elif value == 0:
-            yield '<use href="diagram.svg#inverter-home-x"/>'
+        else:
+            yield '<use href="diagram.svg#home-inverter-conn"/>'
+            if value == 0:
+                yield '<use href="diagram.svg#home-inverter-x"/>'
         if packs:
             yield '<use href="diagram.svg#battery"/>'
-            yield '<use href="diagram.svg#inverter-battery-conn"/>'
             value = props.get("packState")
-            if value == 0:
-                yield '<use href="diagram.svg#battery-inverter-x"/>'
-            elif value == 1:
+            if value == 1:
                 yield '<use href="diagram.svg#inverter-battery"/>'
                 value = props.get("outputPackPower")
                 if value:
-                    yield f'<text x="745" y="481" {svg_text_attr}>'
+                    yield f'<text x="776.107" y="504.743" {svg_text_attr}'
+                    yield ' dominant-baseline="middle" text-anchor="start">'
                     yield q(t.number(value, "W"))
                     yield "</text>"
             elif value == 2:
                 yield '<use href="diagram.svg#battery-inverter"/>'
                 value = props.get("packInputPower")
                 if value:
-                    yield f'<text x="745" y="481" {svg_text_attr}>'
+                    yield f'<text x="776.107" y="504.743" {svg_text_attr}'
+                    yield ' dominant-baseline="middle" text-anchor="start">'
                     yield q(t.number(value, "W"))
                     yield "</text>"
+            else:
+                yield '<use href="diagram.svg#battery-inverter-conn"/>'
+                if value == 0:
+                    yield '<use href="diagram.svg#battery-inverter-x"/>'
             value = props.get("electricLevel")
             if value is not None:
-                yield f'<text x="779" y="611" {svg_text_attr}>'
+                yield f'<text x="848.775" y="638.686" {svg_text_attr}'
+                yield ' dominant-baseline="middle" text-anchor="start">'
                 yield q(t.number(value, "%"))
                 yield "</text>"
             values = [
@@ -540,11 +547,11 @@ def index(request):
             ]
             value = max(values) if values else None
             if value:
-                yield f'<text x="630" y="611" {svg_text_attr} text-anchor="end">'
+                yield f'<text x="658.158" y="638.686" {svg_text_attr}'
+                yield ' dominant-baseline="middle" text-anchor="end">'
                 yield q(t.number(value, "°C"))
                 yield "</text>"
         if __meter_available:
-            yield '<use href="diagram.svg#home-grid-conn"/>'
             yield '<use href="diagram.svg#grid"/>'
             value = __auto_power_info_data.get(config.METER_POWER_DISPLAY_FIELD)
             if value:
@@ -552,11 +559,14 @@ def index(request):
                     yield '<use href="diagram.svg#home-grid"/>'
                 else:
                     yield '<use href="diagram.svg#grid-home"/>'
-                yield f'<text x="274" y="421" {svg_text_attr} text-anchor="end">'
+                yield f'<text x="315.023" y="428.873" {svg_text_attr}'
+                yield ' dominant-baseline="middle" text-anchor="end">'
                 yield q(t.number(abs(value), "W"))
                 yield "</text>"
-            elif value == 0:
-                yield '<use href="diagram.svg#grid-home-x"/>'
+            else:
+                yield '<use href="diagram.svg#grid-home-conn"/>'
+                if value == 0:
+                    yield '<use href="diagram.svg#grid-home-x"/>'
         if props.get("pass"):
             yield '<use href="diagram.svg#bypass"/>'
         yield "</svg>"
