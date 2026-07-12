@@ -382,7 +382,8 @@ async def check_csrf(request):
 
 @app.after_request
 async def set_csrf_cookie(request, response):
-    response.set_cookie("csrf", "; SameSite=Strict", path="/", http_only=True)
+    response.headers["Set-Cookie"] = response.headers.get("Set-Cookie", [])
+    response.headers["Set-Cookie"].append("csrf=; SameSite=Strict; Path=/; HttpOnly")
 
 
 pvBrands = ["Hoymiles", "Enphase", "APsystems", "Anker", "Deye", "BossWerk", "Tsun"]
